@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="myDsl" nsURI="http://www.xtext.org/constraint/mydsl/MyDsl" nsPrefix="myDsl">
+  <eClassifiers xsi:type="ecore:EClass" name="PatternModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="QueryInitialization">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="timeWindow" eType="#//TimeWindow"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputStatements" eType="#//InputStatement"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PatternInitialization">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="timeWindow" eType="#//TimeWindow"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputStatements" upperBound="-1"
+        eType="#//InputStatement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternStatements" eType="#//PatternStatement"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComplexInitialization">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="timeWindow" eType="#//TimeWindow"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputStatements" upperBound="-1"
+        eType="#//InputStatement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="complexPatternStatements"
+        eType="#//ComplexPatternStatements" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComplexPatternStatements">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="complexPatternType" eType="#//ComplexPatternType"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComplexPatternType">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="firstEvent" eType="#//InputStatement"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="greedyQuantifiers" eType="#//GreedyQuantifiers"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="complexPatternOptions"
+        upperBound="-1" eType="#//ComplexPatternOptions" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComplexPatternOptions">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="seceondEvent" eType="#//InputStatement"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="greedyQuantifiers" eType="#//GreedyQuantifiers"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InputStatement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Property" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="comparisonOperator" eType="#//ComparisonOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ValueOptions"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PatternStatement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternType" eType="#//PatternType"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PatternType">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="firstEvent" eType="#//InputStatement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternOptions" upperBound="-1"
+        eType="#//PatternOptions" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PatternOptions">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurenceAtLeast" eType="#//OccurenceAtLeast"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurenceAtMost" eType="#//OccurenceAtMost"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="occurenceAtNotSpecificTime"
+        eType="#//OccurenceAtNotSpecificTime" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OccurenceAtTime">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="minDuration" eType="#//MinDuration"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="maxDuration" eType="#//MaxDuration"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OccurenceAtLeast">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="seceondEvent" eType="#//InputStatement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="minDuration" eType="#//MinDuration"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OccurenceAtMost">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="seceondEvent" eType="#//InputStatement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="maxDuration" eType="#//MaxDuration"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OccurenceAtNotSpecificTime">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="seceondEvent" eType="#//InputStatement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Timer">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timerType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="time" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timeUnit" eType="#//TimeUnit"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MaxDuration" eSuperTypes="#//Timer"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MinDuration" eSuperTypes="#//Timer"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TimeWindow">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="time" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timeUnit" eType="#//TimeUnit"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ComparisonOperator">
+    <eLiterals name="Equal" literal="="/>
+    <eLiterals name="NotEqual" value="1" literal="!="/>
+    <eLiterals name="BiggerThan" value="2" literal=">"/>
+    <eLiterals name="LessThan" value="3" literal="&lt;"/>
+    <eLiterals name="LessThanOrEqual" value="4" literal="=&lt;"/>
+    <eLiterals name="BiggerThanOrEqual" value="5" literal="=>"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TimeUnit">
+    <eLiterals name="MicroSeconds" literal="microseconds"/>
+    <eLiterals name="MilliSeconds" value="1" literal="milliseconds"/>
+    <eLiterals name="Seconds" value="2" literal="seconds"/>
+    <eLiterals name="Minute" value="3" literal="minute"/>
+    <eLiterals name="Hour" value="4" literal="hour"/>
+    <eLiterals name="Day" value="5" literal="day"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="GreedyQuantifiers">
+    <eLiterals name="Once" literal="Once"/>
+    <eLiterals name="ZeroOrMore" value="1" literal="ZeroOrMore"/>
+    <eLiterals name="OneOrMore" value="2" literal="OneOrMore"/>
+    <eLiterals name="ZeroOrOne" value="3" literal="ZeroOrOne"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ValueOptions">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stringLiteral" eType="#//StringLiteral"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="numberLiteral" eType="#//NumberLiteral"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="textLiteral" eType="#//TextLiteral"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StringLiteral">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NumberLiteral">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TextLiteral">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+</ecore:EPackage>

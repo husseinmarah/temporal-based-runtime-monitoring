@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/at.jku.se.mosumo.dronology.constraint.esper/src-gen"
+    creationIcons="false" editDirectory="/at.jku.se.mosumo.dronology.constraint.esper.edit/src-gen"
+    editorDirectory="/at.jku.se.mosumo.dronology.constraint.esper.editor/src-gen"
+    modelPluginID="at.jku.se.mosumo.dronology.constraint.esper" modelName="Esper"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" codeFormatting="true"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>esper.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="Esper" basePackage="at.jku.se.mosumo.dronology.constraint"
+      disposableProviderFactory="true" ecorePackage="esper.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="esper.ecore#//DataType">
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/String"/>
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/Boolean"/>
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/Double"/>
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/Int"/>
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/Date"/>
+      <genEnumLiterals ecoreEnumLiteral="esper.ecore#//DataType/Float"/>
+    </genEnums>
+    <genClasses ecoreClass="esper.ecore#//EsperComponent"/>
+    <genClasses ecoreClass="esper.ecore#//EsperEngine">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//EsperEngine/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/constraint"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/epruntime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/epserviceprovider"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/logger"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/configuration"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//EsperEngine/package"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//EPServiceProvider">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//EPServiceProvider/name"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//EPRuntime">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//EPRuntime/name"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Constraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Constraint/epStatement"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Constraint/statementSubscriber"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Constraint/listener"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Constraint/event"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Constraint/logger"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Constraint/syntaxExpression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Constraint/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Constraint/agent"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Constraint/topic"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Event">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Event/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Event/variable"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Variable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Variable/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Variable/type"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Listener">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference esper.ecore#//Listener/logger"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Logger">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Logger/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Logger/text"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Configuration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Configuration/name"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Package">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Package/qualifiedName"/>
+    </genClasses>
+    <genClasses ecoreClass="esper.ecore#//Agent">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute esper.ecore#//Agent/id"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference esper.ecore#//Agent/event"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

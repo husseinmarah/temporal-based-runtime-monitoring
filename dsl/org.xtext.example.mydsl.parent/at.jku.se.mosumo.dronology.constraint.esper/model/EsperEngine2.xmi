@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<esper:EsperEngine
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:esper="http://at.jku.se.mosumo.dronology.constraint/esper"
+    name="EsperEngine">
+  <constraint
+      epStatement="statement1"
+      statementSubscriber="statementSubscriber1"
+      syntaxExpression="null"
+      name="C1">
+    <listener>
+      <logger
+          name="LOG"
+          text="Inside Listener"/>
+    </listener>
+    <event name="speed">
+      <variable
+          name="speed"
+          type="double"/>
+      <variable
+          name="timeStamp"
+          type="Date"/>
+    </event>
+    <agent id="VIRT1"/>
+    <agent id="VIRT2"/>
+  </constraint>
+  <constraint
+      epStatement="statement2"
+      statementSubscriber="statementSubscriber2"
+      syntaxExpression="null2"
+      name="C2">
+    <listener>
+      <logger
+          name="LOG"/>
+    </listener>
+    <event name="voltage">
+      <variable
+          name="voltage"
+          type="int"/>
+      <variable
+          name="timeStamp"
+          type="Date"/>
+    </event>
+    <agent id="VIRT3"/>
+  </constraint>
+  <constraint
+      name="C5">
+    <event name="no_satellites">
+      <variable
+          name="satellites"/>
+    </event>
+  </constraint>
+  <constraint
+      name="C6">
+    <event name="Battery">
+      <variable
+          name="level"
+          type="double"/>
+      <variable
+          name="current"/>
+    </event>
+  </constraint>
+  <constraint
+      name="C3">
+    <event name="mission">
+      <variable
+          name="MissionStart"/>
+      <variable
+          name="MissionFinish"/>
+      <variable
+          name="WayPoint"/>
+    </event>
+  </constraint>
+  <constraint
+      name="C4">
+    <event name="TAKEOFF">
+      <variable
+          name="takeoff"/>
+      <variable
+          name="go-to"/>
+    </event>
+  </constraint>
+  <constraint
+      name="C7">
+    <event name="SystemShutdown">
+      <variable
+          name="AssistTorque"
+          type="int"/>
+      <variable
+          name="RampDownInitiated"/>
+    </event>
+  </constraint>
+  <epruntime
+      name="rnt"/>
+  <epserviceprovider
+      name="srv"/>
+  <logger name="LOG"
+      text="Start Engine"/>
+  <configuration
+      name="configTest"/>
+  <package qualifiedName="org.test.constraint"/>
+</esper:EsperEngine>

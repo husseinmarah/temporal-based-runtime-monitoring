@@ -1,0 +1,353 @@
+[comment encoding = UTF-8 /]
+[module generate('http://at.jku.se.mosumo.dronology.constraint/esper')]
+
+[template public generateElement(anEsperEngine : EsperEngine)]
+[comment @main/]
+[if (anEsperEngine.name->oclIsInvalid()._not())]
+    [generateMainClass(anEsperEngine)/]
+	[generateLoadConfiguration(anEsperEngine)/]
+	[generateSendEvent(anEsperEngine)/]
+    [generateEvents(anEsperEngine)/]
+    [generateListeners(anEsperEngine)/]
+    [generateEventSubscriber(anEsperEngine)/]
+    [generateStatementSubscriber(anEsperEngine)/]
+    [generateMQTTMessage(anEsperEngine)/]
+
+[/if]
+[/template]
+
+[template public generateEvents(anEsperEngine : EsperEngine)]
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[file (anEsperEngine._package.qualifiedName+'.event/'+constraint.event.name.toUpperFirst()+'Event.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName.concat('.event')/];
+	/**
+     * POJO class for the [event.name/] event
+	 * @generated
+	 */
+public class [constraint.event.name.toUpperFirst()/]Event{ 
+[if (constraint.event.name<>'invalid')]
+  [for (event : Event | constraint.event)]
+    [for (variable : Variable | event.variable)]
+
+	/**
+	 * [variable.name/] event
+     */
+    private [if (variable.type.toString() = 'String')][variable.type/][else][variable.type.toString().toLowerFirst()/][/if] [variable.name/];
+    [/for]
+	/**
+	 * [constraint.event.name/] event constructor.
+     *
+	[for (variable : Variable | event.variable)]
+	 * @param [variable.name/]
+	 *            is the [variable.name/] event
+    [/for]
+     * @generated
+	 */
+
+    public [constraint.event.name.toUpperFirst()/]Event([for (variable : Variable | event.variable) separator(', ')][variable.type.toString().toLowerFirst()/] [variable.name/][/for]) {	
+    [for (variable : Variable | event.variable)]
+        this.[variable.name/]=[variable.name/];
+    [/for]
+    }
+
+    [for (variable : Variable | event.variable)]
+	/**
+     * @return
+     * the value of the '<em><b>[variable.name/]</b></em>' attribute.
+	 * @generated
+	 */
+    public [variable.type.toString().toLowerFirst()/] get[variable.name.toUpperFirst().concat('()')/] {
+        return [variable.name/];
+    }
+
+    [/for]
+    public String toString() {
+        return "[for (variable : Variable | event.variable) separator('+" , "+"')][variable.name.toUpperFirst()/]: "+[variable.name/][/for];
+    }
+
+[/for]
+[/if]
+}
+[/file]
+[/for]
+[/template]
+
+[template public generateMainClass(anEsperEngine : EsperEngine)]
+[file (anEsperEngine._package.qualifiedName+'/'+anEsperEngine.name.toUpperFirst()+'API.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName/];
+[if (anEsperEngine.logger->oclIsInvalid()._not())]
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+[/if]
+
+public class [anEsperEngine.name.toUpperFirst().concat('API')/]{
+
+     private static Logger [anEsperEngine.logger.name/] = LoggerFactory.getLogger([anEsperEngine.name.toUpperFirst().concat('API.class.getName()')/]);
+     private static EPServiceProvider [anEsperEngine.epserviceprovider.name/];
+     private static EPRuntime [anEsperEngine.epruntime.name/];
+
+	 [for (event : Event | constraint.event)]
+	 /**[event.name/] event statement and subscriber*/
+     private static EPStatement [event.name.concat('EventStatement')/];
+     private static StatementSubscriber [event.name.concat('EventStatementSubscriber')/];
+
+     [/for]
+
+     [generateLoadConfiguration(anEsperEngine)/]
+     [generateCreateCheckExpression(anEsperEngine)/]
+     [generateSendEvent(anEsperEngine)/]
+
+}
+[/file]
+
+[file (anEsperEngine._package.qualifiedName+'/'+anEsperEngine.name.toUpperFirst()+'Run.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName/];
+import org.constraint.test.mqtt.MQTTMessage;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class [anEsperEngine.name.toUpperFirst().concat('Run')/] {
+	private static Logger LOG = LoggerFactory.getLogger([anEsperEngine.name.toUpperFirst().concat('Run')/].class);
+
+	public static void main(String ['['/][']'/] args) throws Exception {
+
+        System.out.println((" == Starting main == "));
+		[anEsperEngine.name.toUpperFirst().concat('Run')/] [anEsperEngine.name.toLowerFirst().concat('Run')/] = new [anEsperEngine.name.toUpperFirst().concat('Run')/]();		
+		[anEsperEngine.name.toUpperFirst().concat('API')/] [anEsperEngine.name.toLowerFirst().concat('API')/] = new [anEsperEngine.name.toUpperFirst().concat('API')/]();
+		[anEsperEngine.name.toLowerFirst().concat('API')/].loadEsperEngine();
+		[anEsperEngine.name.toLowerFirst().concat('Run')/].loadMqttConfiguration();
+
+	}
+	
+	public void loadMqttConfiguration() throws MqttException {
+
+		MqttClient client = new MqttClient("tcp://localhost:1883",
+				MqttClient.generateClientId(), new MqttDefaultFilePersistence("/tmp"));
+		client.connect();
+
+		MQTTMessage callback = new MQTTMessage();
+		client.setCallback(callback);
+
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[for (agent : Agent | constraint.agent)]
+        client.subscribe("[agent.id/]/[constraint.topic/]");
+[/for]
+[/for]	
+	}
+	
+}
+
+[/file] 
+ 
+[/template]
+
+[template public generateLoadConfiguration(anEsperEngine : EsperEngine)]
+
+public void load[anEsperEngine.name.toUpperFirst().concat('()')/]{
+	[anEsperEngine.logger.name.concat('.info')/]("== Starting [anEsperEngine.name/] ==");
+	Configuration [anEsperEngine.configuration.name/]=new Configuration();
+	[anEsperEngine.configuration.name/].addEventTypeAutoName("[anEsperEngine._package.qualifiedName.concat('.event')/]");
+	[anEsperEngine.epserviceprovider.name/] = EPServiceProviderManager.getDefaultProvider([anEsperEngine.configuration.name/]);
+	[anEsperEngine.epruntime.name/] = [anEsperEngine.epserviceprovider.name.concat('.getEPRuntime()')/];
+	[for (constraint : Constraint | anEsperEngine.constraint)]
+	create[constraint.name/]CheckExpression(); 
+	[/for]
+
+}
+[/template]
+
+[template public generateSendEvent(anEsperEngine : EsperEngine)]
+[for (constraint : Constraint | anEsperEngine.constraint) separator('\n')]
+public void send[constraint.event.name.toUpperFirst()/]Event(String agentID, [for (variable : Variable | event.variable) separator(', ')][variable.type.toString().toLowerFirst()/] [variable.name/][/for]) {
+	if ([for (agent : Agent | constraint.agent) separator('||')] agentID.equals("[agent.id/]") [/for])
+	{
+	[anEsperEngine.logger.name.concat('.info')/]("[event.name.toUpperFirst()/] Sent from: "+agentID+" to Esper Engine: " + [for (variable : Variable | event.variable) separator('+" , "+')][variable.name/][/for]);
+	[anEsperEngine.epruntime.name/].sendEvent(new [event.name.toUpperFirst().concat('Event')/]([for (variable : Variable | event.variable) separator(', ')][variable.name/][/for]));
+	}
+}
+[/for]
+[/template]
+
+[template public generateCreateCheckExpression(anEsperEngine : EsperEngine)]
+[for (constraint : Constraint | anEsperEngine.constraint)]
+/**[constraint.event.name/] event check expression*/
+private static void create[constraint.name/]CheckExpression() {
+
+	[anEsperEngine.logger.name.concat('.debug')/]("Create [constraint.name/] Check Expression");
+	[event.name.toUpperFirst().concat('EventSubscriber')/] [event.name.concat('EventSubscriber')/] =new [event.name.toUpperFirst().concat('EventSubscriber()')/];	
+	[event.name.concat('EventStatement')/] = [anEsperEngine.epserviceprovider.name/].getEPAdministrator().createEPL([event.name.concat('EventSubscriber')/].getStatement());
+	[event.name.concat('EventStatement')/].setSubscriber([event.name.concat('EventStatementSubscriber')/]);
+	[event.name.concat('EventStatement')/].addListener(new [event.name.toUpperFirst()/]EventListener());
+}
+
+[/for]
+[/template]
+
+[template public generateListeners(anEsperEngine : EsperEngine)]
+
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[file (anEsperEngine._package.qualifiedName.concat('.listener.')+'/'+constraint.event.name.toUpperFirst()+'EventListener.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName/].listener;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.UpdateListener;
+[if (anEsperEngine.logger->oclIsInvalid()._not())]
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+[/if]
+public class [event.name.toUpperFirst()/]EventListener implements UpdateListener {
+    private static Logger [constraint.listener.logger.name/] = LogManager.getLogger([constraint.event.name.toUpperFirst().concat('EventListener.class.getName()')/]);
+	public void update(EventBean['['/][']'/] incomingEvents, EventBean['['/][']'/] outgoinEvents) {
+
+		for (EventBean eventBean : incomingEvents) {
+			[constraint.listener.logger.name.concat('.warn')/]("[constraint.event.name.toUpperFirst()/] Event Matching: "+eventBean.getUnderlying());
+			
+		}
+	}
+}   
+[/file]
+[/for]
+[/template]
+
+[template public generateStatementSubscriber(anEsperEngine : EsperEngine)]
+[for (anEsperEngine : EsperEngine | anEsperEngine)]
+[file (anEsperEngine._package.qualifiedName.concat('.subscriber.')+'/'+'StatementSubscriber.java', false, 'UTF-8')]
+
+package [anEsperEngine._package.qualifiedName/].subscriber;
+public interface StatementSubscriber {
+    /**
+     * Get the EPL Stamement the Subscriber will listen to.
+     * @return EPL Statement
+     */
+    public String getStatement();
+}
+[/file]
+[/for]
+[/template]
+
+[template public generateEventSubscriber(anEsperEngine : EsperEngine)]
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[file (anEsperEngine._package.qualifiedName.concat('.subscriber.')+'/'+constraint.event.name.toUpperFirst()+'EventSubscriber.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName/].subscriber;
+public class [event.name.toUpperFirst().concat('EventSubscriber')/] implements StatementSubscriber {
+    public String getStatement() {  	
+    	String [event.name.toUpperFirst().concat('EventStatement')/] = "[constraint.syntaxExpression/]";
+        return [event.name.toUpperFirst().concat('EventStatement')/];
+    }
+  
+}
+[/file]
+[/for]
+[/template]
+
+[template public generateMQTTMessage(anEsperEngine : EsperEngine)]
+[file (anEsperEngine._package.qualifiedName.concat('.mqtt.')+'/'+'MQTTMessage.java', false, 'UTF-8')]
+package [anEsperEngine._package.qualifiedName/].mqtt;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONObject;
+import java.util.logging.Logger;
+
+public class MQTTMessage implements MqttCallback {
+	   static boolean status = false;
+       private static Object object;
+	   EsperEngineAPI esperEngineAPI = new EsperEngineAPI();
+       private final static Logger LOG = Logger.getLogger(MQTTMessage.class.getName());
+	   public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+	
+	   JSONObject jsonObj = new JSONObject(new String(mqttMessage.getPayload()));
+[comment][for (constraint : Constraint | anEsperEngine.constraint)]
+[for (variable : Variable | event.variable)]
+       [if (variable.type.toString() <> 'Date')][/if]
+       [variable.type.toString().toLowerFirst()/] [variable.name.concat('Variable')/] = jsonObj.get[variable.type/]("[variable.name/]");
+       System.out.println("[variable.name/]: "+[variable.name.concat('Variable')/]);
+[/for]
+
+[for (agent : Agent | constraint.agent)]
+       esperEngineAPI.send[constraint.event.name.concat('Event').toUpperFirst()/]("[agent.id/]", [for (variable : Variable | constraint.event.variable) separator(', ')][variable.name.concat('Variable')/][/for]);
+[/for]   
+[/for]
+
+
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[for (variable : Variable | event.variable)]
+[for (agent : Agent | constraint.agent)]
+       [if (variable.type.toString() <> 'Date')][/if]
+       if (hasElement(jsonObj, "[variable.name/]") && topic.equals("[agent.id/]/[constraint.topic/]")){
+       [variable.type.toString().toLowerFirst()/] [variable.name.concat('Variable')/] = [variable.type.toString().concat('.')/]valueOf(object.toString()).[variable.type.toString().toLowerFirst().concat('Value()')/];
+       System.out.println("[variable.name/]: "+[variable.name.concat('Variable')/]);
+       esperEngineAPI.send[constraint.event.name.concat('Event').toUpperFirst()/]("[agent.id/]", [for (variable : Variable | constraint.event.variable) separator(', ')][variable.name.concat('Variable')/][/for]);
+
+     }
+[/for]
+[/for]   
+[/for][/comment]
+
+
+[for (constraint : Constraint | anEsperEngine.constraint)]
+[for (agent : Agent | constraint.agent)]
+       if (topic.equals("[agent.id/]/[constraint.topic/]")){
+[for (variable : Variable | constraint.event.variable)]
+       [variable.type.toString().toLowerFirst()/] [variable.name/]Variable;
+[if (variable.type.toString() <> 'Date')][/if]
+[/for]
+          try{
+[for (variable : Variable | constraint.event.variable)]
+	   if (jsonObj.has("[variable.name/]") == true) {
+		 [variable.name/]Variable = jsonObj.get[variable.type.toString().toUpperFirst()/]("[variable.name/]");
+			} else {
+		 [variable.name/]Variable =[if (variable.type.toString() = 'Int')]Integer[else][variable.type.toString().toUpperFirst()/][/if].valueOf(hasElement(jsonObj, "[variable.name/]").toString()).[variable.type.toString().toLowerFirst()/]Value();		 
+       }
+[/for]
+       System.out.println([for (variable : Variable | constraint.event.variable)separator(' +"  "+ ')]"[variable.name/]: " + [variable.name/]Variable[/for]); 
+	   esperEngineAPI.send[constraint.event.name.toString().toUpperFirst()/]Event("[agent.id/]", [for (variable : Variable | constraint.event.variable)separator(', ')][variable.name/]Variable[/for]);
+       [comment get the different agents connected to this constraint/]
+       [comment]  esperEngineAPI.send[constraint.event.name.concat('Event').toUpperFirst()/]("[agent.id/]", [for (variable : Variable | constraint.event.variable) separator(', ')][variable.name.concat('Variable')/][/for]);[/comment]
+	    } catch (Exception e) {
+				System.err.println("Still not ready");
+		}
+       }
+[/for]
+[/for]
+}
+
+	public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+		System.out.println("Delivered");
+	}
+
+	public void connectionLost(Throwable throwable) {
+		System.out.println("The connection to MQTT broker has been lost!" + throwable);
+	}
+
+	public static Object hasElement(JSONObject json, String key) {
+
+		boolean exists = json.has(key);
+		if (exists==true)
+		{
+			status=true;
+		    object=json.get(key);
+		}
+
+		Iterator<?> keys;
+		String nextKey;
+
+		if (exists==false) {
+			keys = json.keys();
+			while (keys.hasNext()) {
+				nextKey = (String) keys.next();
+				if (json.get(nextKey) instanceof JSONObject) {
+					object = hasElement(json.getJSONObject(nextKey), key);
+				}
+			}
+		}
+
+		return object;
+	}
+}
+
+[/file]
+[/template]

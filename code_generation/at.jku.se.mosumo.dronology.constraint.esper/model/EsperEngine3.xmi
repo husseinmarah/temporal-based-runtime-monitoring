@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<esper:EsperEngine
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:esper="http://at.jku.se.mosumo.dronology.constraint/esper"
+    xsi:schemaLocation="http://at.jku.se.mosumo.dronology.constraint/esper esper.ecore"
+    name="EsperEngine">
+  <constraint
+      epStatement="statement1"
+      statementSubscriber="statementSubscriber1"
+      syntaxExpression="null"
+      name="c1"
+      topic="State">
+    <listener>
+      <logger
+          name="LOG"
+          text="Inside Listener"/>
+    </listener>
+    <event name="speed">
+      <variable
+          name="groundspeed"
+          type="Double"/>
+      <variable
+          name="voltage"
+          type="Int"/>
+    </event>
+    <agent id="VIRT1"/>
+    <agent id="VIRT2"/>
+  </constraint>
+  <constraint
+      epStatement="statement2"
+      statementSubscriber="statementSubscriber2"
+      syntaxExpression="null2"
+      name="c2"
+      topic="State">
+    <listener>
+      <logger
+          name="LOG"/>
+    </listener>
+    <event name="satellites">
+      <variable
+          name="n_satellites"
+          type="Int"/>
+    </event>
+    <agent id="VIRT3"/>
+  </constraint>
+  <epruntime
+      name="rnt"/>
+  <epserviceprovider
+      name="srv"/>
+  <logger name="LOG"
+      text="Start Engine"/>
+  <configuration
+      name="configTest"/>
+  <package qualifiedName="org.test.constraint"/>
+</esper:EsperEngine>

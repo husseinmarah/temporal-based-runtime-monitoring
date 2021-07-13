@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated esper -->
+      <package
+            uri="http://at.jku.se.mosumo.dronology.constraint/esper"
+            class="at.jku.se.mosumo.dronology.constraint.esper.EsperPackage"
+            genModel="model/esper.genmodel"/>
+   </extension>
+
+</plugin>

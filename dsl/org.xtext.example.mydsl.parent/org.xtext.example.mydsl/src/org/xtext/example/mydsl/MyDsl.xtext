@@ -1,0 +1,146 @@
+grammar org.xtext.constraint.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
+
+generate myDsl "http://www.xtext.org/constraint/mydsl/MyDsl"
+
+PatternModel:
+    (elements=PatternInitialization)|(elements=QueryInitialization) |(elements=ComplexInitialization);
+
+QueryInitialization:
+    'Initialize:' 'SimpleConstraint' name=ID timeWindow=TimeWindow? '{'
+            'Event'  '{'
+        inputStatements=InputStatement
+        '}'
+    '}';
+
+PatternInitialization:
+    'Initialize:' 'RealTimeConstraint' name=ID timeWindow=TimeWindow? '{'
+            'Events' '{'
+        inputStatements+=InputStatement+
+        '}'
+//            'Declarations' '{'
+//        declareStatements+=DeclareStatement+
+//        '}'
+            'Pattern'  '{'
+        patternStatements=PatternStatement
+        '}'
+    '}';
+
+ComplexInitialization:
+    'Initialize:' 'ComplexConstraint' name=ID timeWindow=TimeWindow? '{'
+            'Events' '{'
+        inputStatements+=InputStatement+
+        '}'
+            'Pattern'  '{'
+        complexPatternStatements=ComplexPatternStatements
+        '}'
+    '}';
+
+ComplexPatternStatements:
+	    'DefinePattern' '(' complexPatternType=ComplexPatternType ')'
+;
+
+ComplexPatternType:
+firstEvent=[InputStatement] ('Occurs' greedyQuantifiers=GreedyQuantifiers)? complexPatternOptions+=ComplexPatternOptions+	
+;
+
+ComplexPatternOptions:
+('followed-by' (seceondEvent=[InputStatement]) ('Occurs' greedyQuantifiers=GreedyQuantifiers)?)	
+;
+ 
+InputStatement:
+   'InputEvent' name=ID 'as' Property=STRING 'and' 'SetEvent' comparisonOperator=ComparisonOperator value=ValueOptions','
+;
+
+//DeclareStatement:
+//    'SetEvent' (select=[InputStatement]) comparisonOperator=ComparisonOperator value=ValueOptions ',' 
+//;
+
+PatternStatement:
+    'DefinePattern' '(' patternType=PatternType ')'
+;
+
+PatternType:
+	 firstEvent=[InputStatement] (patternOptions+=PatternOptions+); 
+
+PatternOptions:
+occurenceAtLeast=OccurenceAtLeast | 
+occurenceAtMost=OccurenceAtMost | 
+occurenceAtNotSpecificTime=OccurenceAtNotSpecificTime
+;
+
+OccurenceAtTime:
+     'Occurs-After' '@' minDuration=MinDuration | 'Occurs-Before' '@' maxDuration=MaxDuration	
+;
+
+OccurenceAtLeast:
+	 ('followed-by' (seceondEvent=[InputStatement]) 'Occurs-After' '@' minDuration=MinDuration)
+; 
+
+OccurenceAtMost:
+	('followed-by' (seceondEvent=[InputStatement]) 'Occurs-Before' '@' maxDuration=MaxDuration)
+;
+
+OccurenceAtNotSpecificTime:
+	('followed-by' (seceondEvent=[InputStatement]))
+;
+
+
+Timer:
+	MaxDuration | MinDuration
+;
+
+MaxDuration:
+timerType='MaxDuration' '['time=INT timeUnit=TimeUnit ']'
+;
+
+MinDuration:
+timerType='MinDuration' '['time=INT timeUnit=TimeUnit']'
+;
+
+TimeWindow:
+'With' 'TimeWindow' '['time=INT timeUnit=TimeUnit']'
+;
+
+
+enum ComparisonOperator:
+    Equal = '=' | 
+    NotEqual = '!=' | 
+    BiggerThan = '>'|
+    LessThan = '<' |
+    LessThanOrEqual = '=<' |
+    BiggerThanOrEqual = '=>'
+    ;
+
+enum TimeUnit:
+    MicroSeconds = 'microseconds' | 
+    MilliSeconds = 'milliseconds' | 
+    Seconds = 'seconds'|
+    Minute = 'minute' |
+    Hour = 'hour' |
+    Day = 'day'
+    ;
+
+
+enum GreedyQuantifiers:
+	Once= 'Once' |
+    ZeroOrMore = 'ZeroOrMore' |
+    OneOrMore = 'OneOrMore' |
+    ZeroOrOne = 'ZeroOrOne' 
+    ;
+
+
+ValueOptions :
+	stringLiteral=StringLiteral |
+	numberLiteral=NumberLiteral |
+	textLiteral=TextLiteral;
+	
+StringLiteral :
+	value=STRING;
+
+NumberLiteral:
+	value=INT('.'INT)?;
+
+TextLiteral:
+	value=ID;
+
+
